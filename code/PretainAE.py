@@ -42,7 +42,10 @@ def save_weight_to_pickle(model, file_name):
 if __name__ == '__main__':
     # load tabular mutation or expression data
     data, data_labels, sample_names, gene_names = load_data("../pretrain_data/tcga_exp.txt")
-    
+    print(f"Data shape: {data.shape}")  # 打印數據形狀
+    if data.size == 0:
+        raise ValueError("Loaded data is empty. Check the input file or data loading logic.")
+
     # 检查数据是否成功加载并是有效的数值类型
     if not np.issubdtype(data.dtype, np.number):
         raise ValueError("Loaded data contains non-numeric values.")
