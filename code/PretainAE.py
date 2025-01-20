@@ -3,7 +3,8 @@
 from tensorflow import keras
 import pickle
 import numpy as np
-from keras import Dense  # 从 keras.layers 导入 Dense
+from keras.layers import Dense  # 从 keras.layers 导入 Dense
+
 
 # load tabular data
 def load_data(filename, log_trans=False, label=False):
@@ -41,7 +42,7 @@ def save_weight_to_pickle(model, file_name):
 
 if __name__ == '__main__':
     # load tabular mutation or expression data
-    data, data_labels, sample_names, gene_names = load_data("../pretrain_data/tcga_exp.txt")
+    data, data_labels, sample_names, gene_names = load_data("data/preTrain/tcga_exp.txt")
     print(f"Data shape: {data.shape}")  # 打印數據形狀
     if data.size == 0:
         raise ValueError("Loaded data is empty. Check the input file or data loading logic.")
@@ -53,9 +54,10 @@ if __name__ == '__main__':
     input_dim = data.shape[1]  # 输入维度
 
     # set hyperparameters
-    first_layer_dim = 4096
-    second_layer_dim = 128
-    third_layer_dim = 32
+    first_layer_dim = 1024
+    second_layer_dim = 256
+    third_layer_dim = 64
+    # forth_layer_dim = 128
     batch_size = 64
     epoch_size = 100
     activation_func = 'relu'
@@ -65,6 +67,8 @@ if __name__ == '__main__':
     model = keras.Sequential()
     model.add(Dense(units=first_layer_dim, input_shape=(input_dim,), activation=activation_func, kernel_initializer=init))
     model.add(Dense(units=second_layer_dim, activation=activation_func, kernel_initializer=init))
+    # model.add(Dense(units=third_layer_dim, activation=activation_func, kernel_initializer=init))
+    # model.add(Dense(units=forth_layer_dim, activation=activation_func, kernel_initializer=init))
     model.add(Dense(units=third_layer_dim, activation=activation_func, kernel_initializer=init))
     model.add(Dense(units=second_layer_dim, activation=activation_func, kernel_initializer=init))
     model.add(Dense(units=first_layer_dim, activation=activation_func, kernel_initializer=init))
@@ -74,7 +78,9 @@ if __name__ == '__main__':
     model.fit(data, data, epochs=epoch_size, batch_size=batch_size, shuffle=True)  # 训练模型
 
     cost = model.evaluate(data, data, verbose=0)  # 评估模型
-    print('Training completed.\nCost=%.4f' % cost)
-
+    
+    with open('lossLog.txt', 'w') as f:
+        f.write('4nd time Cost=%.4f' % cost)
+        
     # save model parameters to pickle file, which will be used in TrainModel.py
-    save_weight_to_pickle(model, 'tcga_pretrained_autoencoder_exp.pickle')  # 保存模型权重
+    save_weight_to_pickle(model, 'tcga_pretrained_autoencoder_exp_5.pickle')  # 保存模型权重

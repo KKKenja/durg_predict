@@ -1,2 +1,4 @@
 *.txt
 data/
+output/
+*.h5
